@@ -45,6 +45,9 @@ def experiment(variant, agent="SAC"):
         else:
             # This is a string to the custom controller
             controller_config = load_controller_config(custom_fpath=controller)
+        controller_config["impedance_mode"] = variant["controller_kwargs"]["impedance_mode"]
+        controller_config["kp"] = variant["controller_kwargs"]["kp"]
+        print("controller config in exp: {}".format(controller_config))
         # Create robosuite env and append to our list
         suites.append(suite.make(**env_config,
                                  has_renderer=False,
@@ -182,6 +185,8 @@ def evaluate_policy(env_config, model_path, n_eval, printout=False):
     else:
         # This is a string to the custom controller
         controller_config = load_controller_config(custom_fpath=controller)
+
+    print("controller config in evaluate_policy: {}".format(controller_config))
 
     # Create robosuite env
     env = suite.make(**env_config,

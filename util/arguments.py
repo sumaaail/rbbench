@@ -19,6 +19,17 @@ parser = argparse.ArgumentParser(description='RL args using agents / algs from r
 parser.add_argument(
     '--seed', type=int, default=1, help='random seed (default: 1)')
 
+def add_controller_args():
+    parser.add_argument(
+        '--impedance_mode',
+        type=str,
+        default='fixed',
+        )
+    parser.add_argument(
+        '--kp',
+        type=int,
+        default=150,
+    )
 
 def add_robosuite_args():
     """
@@ -198,7 +209,7 @@ def add_training_args():
     parser.add_argument(
         '--log_dir',
         type=str,
-        default='../log/runs/',
+        default='../test_runs/',
         help='directory to save runs')
 
 

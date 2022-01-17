@@ -16,6 +16,7 @@ os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 add_robosuite_args()
 add_agent_args()
 add_training_args()
+add_controller_args()
 
 # Global vars
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -71,12 +72,21 @@ def run_experiment():
                 eval_max_path_length=args.eval_horizon,
                 batch_size=args.batch_size,
             ),
+            controller_kwargs=dict(
+                impedance_mode=args.impedance_mode,
+                kp=args.kp,
+            ),
             trainer_kwargs=trainer_kwargs,
             expl_environment_kwargs=get_expl_env_kwargs(args),
             eval_environment_kwargs=get_eval_env_kwargs(args),
         )
         # Set logging
-        tmp_file_prefix = "{}_{}_{}_SEED{}".format(args.env, "".join(args.robots), args.controller, args.seed)
+        tmp_file_prefix = "{}_{}_{}_{}_{}_SEED{}".format(args.env,
+                                                         "".join(args.robots),
+                                                         args.controller,
+                                                         args.impedance_mode,
+                                                         args.kp,
+                                                         args.seed)
     else:
         # This is a variant we want to load
         # Attempt to load the json file
@@ -88,13 +98,24 @@ def run_experiment():
                   "Please check filepath and try again.".format(variant))
 
         # Set logging
-        tmp_file_prefix = "{}_{}_{}_SEED{}".format(variant["expl_environment_kwargs"]["env_name"],
-                                                   "".join(variant["expl_environment_kwargs"]["robots"]),
-                                                   variant["expl_environment_kwargs"]["controller"],
-                                                   args.seed)
+        tmp_file_prefix = "{}_{}_{}_{}_{}_SEED{}".format(variant["expl_environment_kwargs"]["env_name"],
+                                                         "".join(variant["expl_environment_kwargs"]["robots"]),
+                                                         variant["expl_environment_kwargs"]["controller"],
+                                                         # change later
+                                                         args.impedance_mode,
+                                                         args.kp,
+                                                         variant['seed'])
+        
         # Set agent
         args.agent = variant["algorithm"]
 
+    # Set controller kwargs
+    # variant["controller_kwargs"]["impedance_mode"] = args.impedance_mode
+    # variant["controller_kwargs"]["kp"] = args.kp
+    variant["controller_kwargs"]=dict(
+        impedance_mode=args.impedance_mode,
+        kp=args.kp,
+    )
     # Setup logger
     abs_root_dir = os.path.join(THIS_DIR, args.log_dir)
     tmp_dir = setup_logger(tmp_file_prefix, variant=variant, base_log_dir=abs_root_dir)
@@ -131,4 +152,3 @@ if __name__ == '__main__':
     run_experiment()
 
     print('Finished run!')
-
