@@ -105,7 +105,7 @@ def run_experiment():
                                                          args.impedance_mode,
                                                          args.kp,
                                                          variant['seed'])
-        
+
         # Set agent
         args.agent = variant["algorithm"]
 
