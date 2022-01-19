@@ -1,3 +1,5 @@
+from random import random
+
 from util.rlkit_custom import rollout
 
 from rlkit.torch.pytorch_util import set_gpu_mode
@@ -27,12 +29,18 @@ import numpy as np
 # Define agents available
 AGENTS = {"SAC", "TD3"}
 
+def set_seed(seed):
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.backends.cudnn.deterministic = True
+    np.random.seed(seed)
+    random.seed(seed)
 
 def experiment(variant, agent="SAC"):
 
     # Make sure agent is a valid choice
     assert agent in AGENTS, "Invalid agent selected. Selected: {}. Valid options: {}".format(agent, AGENTS)
-
+    set_seed(variant["seed"])
     # Get environment configs for expl and eval envs and create the appropriate envs
     # suites[0] is expl and suites[1] is eval
     suites = []
